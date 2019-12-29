@@ -202,6 +202,24 @@ sys_page_unmap(envid_t envid, void *va)
 	panic("sys_page_unmap not implemented");
 }
 
+
+static int
+sys_env_set_trapframe(envid_t envid, struct Trapframe *tf)
+{
+	// LAB 5: Your code here.
+	
+	struct Env *e;
+	if (envid2env(envid, &e, 1)) {
+		return -E_BAD_ENV;
+	}
+
+	e->env_tf = *tf;
+	e->env_tf.tf_eflags |= FL_IF;
+	e->env_tf.tf_eflags &= ~FL_IOPL_MASK; // regular process doesn't have IO privilege
+	return 0;
+}
+
+
 // Try to send 'value' to the target env 'envid'.
 // If srcva < UTOP, then also send page currently mapped at 'srcva',
 // so that receiver gets a duplicate mapping of the same page.
