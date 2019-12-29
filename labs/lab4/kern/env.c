@@ -399,9 +399,10 @@ void
 env_create(uint8_t *binary, enum EnvType type)
 {
 	struct Env *e;
-	if (env_alloc(&e, 0) < 0) {
-		panic("env_alloc error!");
-	}
+	env_alloc(&e, 0);
+	if (type == ENV_TYPE_FS) {
+               e->env_tf.tf_eflags |= FL_IOPL_MASK;
+       }
 	load_icode(e, binary);
 	e->env_type = type;
 }
